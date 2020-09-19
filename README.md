@@ -12,3 +12,18 @@ The user can browse available images scraped from docker hub
 And launch one or more instances at the same time
 
 ![Imgur](https://i.imgur.com/sYhiiIz.png)
+
+# Installation
+
+```
+git clone https://github.com/MahmoudAlyy/Docker-on-demand
+```
+```
+cd Docker-on-demand/
+```
+```
+docker build -t docker_on_demand Docker-on-demand/.
+````
+```
+docker run  -p 8000:8000 -it -v "/var/run/docker.sock:/var/run/docker.sock:rw" docker_on_demand
+```
