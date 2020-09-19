@@ -19,9 +19,6 @@ And launch one or more instances at the same time
 git clone https://github.com/MahmoudAlyy/Docker-on-demand
 ```
 ```
-cd Docker-on-demand/
-```
-```
 docker build -t docker_on_demand Docker-on-demand/.
 ````
 ```
