@@ -10,6 +10,7 @@ The user can browse available images scraped from docker hub
 
 
 And launch one or more instances at the same time
+(Ex: Launching Alpine & Python containers)
 
 ![Imgur](https://i.imgur.com/sYhiiIz.png)
 
