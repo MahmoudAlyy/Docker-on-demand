@@ -1,5 +1,5 @@
 # Docker-on-demand
-Django V2 web application to launch docker instances and interact with them using CLI.
+Dockerized Django V2 web application to launch docker instances and interact with them using CLI.
 
 
 
