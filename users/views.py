@@ -19,8 +19,7 @@ import subprocess
 import time
 from subprocess import Popen, PIPE,check_output,call,run
 import select
-
-
+import re
 
 
 ### try to remove # in login requeired
@@ -62,20 +61,6 @@ def browse(request):
 
     return render(request, 'browse.html', {'summary': summary})
 
-
-@login_required
-def launch(request):
-    instance_name = request.GET.get('name',None)
-    print("im here")
-    if instance_name != None:
-        print("entered",instance_name)
-        output = os.popen('docker run -id '+instance_name).read()
-        print("output:",output)
-        return render(request, 'launch.html', {'output': output})
-
-
-    else:
-        return render(request, 'launch.html', {'output': "Errorrrr"})
 
 
 
@@ -128,11 +113,12 @@ def console_post(request):
                 os.write(master, command.encode() + b" \n")
                 time.sleep(0.5)
                 result=os.read(master,2048)
-                data = result.decode("utf-8")
+                data = result.decode()
 
                 data = data.rstrip()
                 if data == command:
                     data = ""
+                output =data
 
             except subprocess.CalledProcessError as e:
                 data = e.output       
@@ -141,14 +127,19 @@ def console_post(request):
             output = ""
             for s in out_list:
                 output+= s[:-1] + "\n"
-            print(output)
-            #output = output.rstrip()
             try:
                 output = output.split("\n",1)[1];
             except:
                 pass
-            output.replace("\n","\r")
+            output.replace("\r","")
+            output = output.rstrip()
 
+            ###
+            #ansi_escape =re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+            ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+            new_out=ansi_escape.sub('', output)
+            output = new_out.replace("undefined", "")                 
+            ####
             if output != "":
                 output = "%c(@green)%" + output + "%c()"
 
@@ -164,7 +155,6 @@ def handle(request):
     if request.method == 'POST':
         data = request.POST.get("instance_name",None)
         if data != None:
-            print(data)
             #pulling image 
             
             cmd = "docker pull " + data
@@ -177,7 +167,7 @@ def handle(request):
             print(process.returncode)
 
             if process.returncode == 0: 
-                cmd = "docker run -id " + data
+                cmd = "docker run -id -t " + data
                 print(cmd)
                 process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 process.wait()

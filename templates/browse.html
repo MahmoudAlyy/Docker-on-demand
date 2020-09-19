@@ -59,16 +59,7 @@ h4 {
 </style>
 {% block content %}
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-Successfully tested ON alpine,nginx,ubuntu
+<p><br></p>
 
 {% for item in summary %}
 
@@ -76,13 +67,13 @@ Successfully tested ON alpine,nginx,ubuntu
 	<div class=".myDiv">
 
 		<img src ="https://d1q6f0aelx0por.cloudfront.net/product-logos/library-{{item.name}}-logo.png?"  onerror="this.onerror=null; this.src='/static/img/docker_img.png'" alt="" width="80" height="80" style="float:left">
-				<p >{{ item.name }} </p>
+				<h4 >{{ item.name }} </h4>
 
 		<p>{{ item.short_description }}</p>
 
 
 	
-	  <a href="/shell/?{{item.name}}" style="float:right;"> launch {{item.name }}</a>
+	  <a href="/shell/?{{item.name}}" class="btn btn-lg btn-secondary" style="float:right; font-size: 15px;"> Launch {{item.name }}</a>
 
 
 	</div>
@@ -93,19 +84,21 @@ Successfully tested ON alpine,nginx,ubuntu
 {% endfor %}
 
 
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="?page=1" style="font-size: 12px;">1</a></li>
+    <li class="page-item"><a class="page-link" href="?page=2" style="font-size: 12px;">2</a></li>
+    <li class="page-item"><a class="page-link" href="?page=3" style="font-size: 12px;">3</a></li>
+    <li class="page-item"><a class="page-link" href="?page=4" style="font-size: 12px;">4</a></li>
+    <li class="page-item"><a class="page-link" href="?page=5" style="font-size: 12px;">5</a></li>
+    <li class="page-item"><a class="page-link" href="?page=6" style="font-size: 12px;">6</a></li>
+    <li class="page-item"><a class="page-link" href="?page=7" style="font-size: 12px;">7</a></li>
+    <li class="page-item"><a class="page-link" href="?page=8" style="font-size: 12px;">8</a></li>
+    <li class="page-item"><a class="page-link" href="?page=9" style="font-size: 12px;">9</a></li>
+    <li class="page-item"><a class="page-link" href="?page=10" style="font-size: 12px;">10</a></li>
 
-
- <div class="pagination">
-  <a href="#">&laquo;</a>
-  <a href="?page=1">1</a>
-  <a href="?page=2">2</a>
-  <a href="?page=3">3</a>
-  <a href="?page=4">4</a>
-  <a href="?page=5">5</a>
-  <a href="?page=6">6</a>
-  <a href="#">&raquo;</a>
-</div> 
-
+  </ul>
+</nav>
 
        
 {% endblock %}

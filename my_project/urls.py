@@ -28,14 +28,9 @@ urlpatterns = [
     url(r'^signup/$', users_views.signup, name='signup'),
     url(r'^shell/$', users_views.shell, name='shell'),
     url(r'^browse/$', users_views.browse, name='browse'),
-    url(r'^launch/$', users_views.launch, name='launch'),
     url(r'^handle/$', users_views.handle, name='handle'),
     url(r'^console/$', users_views.console, name='console'),
     url(r'^console/post/$', users_views.console_post, name='console_post'),
-
-
-
-
 
 
 ]

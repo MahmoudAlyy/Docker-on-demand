@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+
 <html>
 <head>
     {{ process }}
@@ -29,7 +32,7 @@
     term = new Terminal(
         {
             type: "POST",
-            ps: '*->',
+            ps: '',
             greeting: '%+rWith great power comes great responsibilty. %-r%n',
 
             id: 1,
@@ -51,7 +54,11 @@
                         complete: function (info) {
                             
                             universe.write(info.responseText);
-                            universe.prompt();
+
+                            universe.lock=true;
+                            universe._charOut(1);
+                            universe.lock=false;
+                            universe.cursorOn();                            
                         }
                     });
                 
@@ -61,3 +68,5 @@
     term.open();
 </script>
 </html>
+    {% endblock %}
+
