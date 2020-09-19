@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+
+ <style>
+.myDiv {width: 100%; height: 100%;}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20%;
+  height: 10%;
+}
+
+</style>
+
+<body onload="pull_1()">
+
+<div class="myDiv" id="placeholder">
+
+    <p id="p1" class="p"> Pulling Your Docker, Please Wait.  </p>
+     
+
+</div>
+
+<script type="text/javascript">
+  function pull_1() {
+  var xhttp = new XMLHttpRequest();
+var instance_name = location.search.substring(1)
+var instance_name_cap = instance_name.charAt(0).toUpperCase() + instance_name.slice(1)
+
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText != -1){
+            document.getElementById("p1").innerHTML = instance_name_cap+ " has been Pulled. <br>Instnace ID = "+this.responseText+"<br> Running the Image, Please Wait";
+
+          window.location.replace("/console/?id="+this.responseText);
+        }
+        else{
+           document.getElementById("p1").innerHTML = " "
+            alert("Something went worng when pulling "+instance_name_cap)
+        }
+        //handle2()
+
+    }
+  };
+  var instance_name = location.search.substring(1)
+  var csrftoken = '{{ csrf_token }}' ;
+  xhttp.open("POST", "{% url 'handle' %}", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+  xhttp.send("instance_name="+instance_name); 
+}
+
+function run_2(instance_id) {
+var xhttp = new XMLHttpRequest();
+
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == 0){
+            
+        }
+        else{
+           
+        }
+
+    }
+  };
+  var instance_name = location.search.substring(1)
+  var csrftoken = '{{ csrf_token }}' ;
+  xhttp.open("POST", "{% url 'handle' %}", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+  xhttp.send("instance_name="+instance_name); 
+}
+
+  
+
+</script>
+
+{% endblock %}

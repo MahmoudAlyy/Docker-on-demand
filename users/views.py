@@ -1,0 +1,188 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+import os
+import requests
+import subprocess
+from django.http import HttpResponse
+
+###################33
+from django.contrib import admin
+#from django.core.context_processors import csrf
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.conf import settings
+import subprocess
+###################
+import subprocess
+import time
+from subprocess import Popen, PIPE,check_output,call,run
+import select
+
+
+
+
+### try to remove # in login requeired
+
+#@login_required
+def home(request):
+    return render(request, 'home.html')
+
+def shell(request):
+    #get_value = request.GET.get('q',None)
+
+    #process = subprocess.Popen(get_value, shell=True, stdout=subprocess.PIPE)
+    #for line in process.stdout:
+        #print(line)
+    #process.wait()
+    #print (process.returncode)
+
+    #output = os.popen(get_value).read()
+
+    return render(request, 'shell.html')#, {'output': process.returncode, 'output2':process.stdout})
+
+
+
+
+def run_image(request):
+    pass
+
+
+@login_required
+def browse(request):
+    page_number = request.GET.get('page','1')
+
+    url = 'https://hub.docker.com/api/content/v1/products/search?page='+page_number+'&page_size=15&q=&type=image'
+    headers = {'Search-Version': 'v3'}
+
+    page = requests.get(url,headers=headers)
+
+    summary = page.json()['summaries']
+
+    return render(request, 'browse.html', {'summary': summary})
+
+
+@login_required
+def launch(request):
+    instance_name = request.GET.get('name',None)
+    print("im here")
+    if instance_name != None:
+        print("entered",instance_name)
+        output = os.popen('docker run -id '+instance_name).read()
+        print("output:",output)
+        return render(request, 'launch.html', {'output': output})
+
+
+    else:
+        return render(request, 'launch.html', {'output': "Errorrrr"})
+
+
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'signup.html', {'form': form})
+
+
+
+###############################################
+
+
+
+@login_required
+def console(request):
+    
+    return render(request, 'console.html')
+
+@login_required
+def console_post(request):  
+
+
+    if request.POST:
+        command = request.POST.get("command")
+        instance_id = request.POST.get("instance_id")
+
+
+        if command != None:
+            try:
+                result = ""
+                master, slave = os.openpty()
+                SHELL = ["/bin/bash"]
+                shell = subprocess.Popen(SHELL,preexec_fn=os.setsid,stdin=slave,stdout=slave,stderr=slave,universal_newlines=True)
+
+                os.write(master, b"docker attach " + instance_id.encode() + b" \n")
+                time.sleep(0.5)
+                temp=os.read(master,2048)
+
+                os.write(master, command.encode() + b" \n")
+                time.sleep(0.5)
+                result=os.read(master,2048)
+                data = result.decode("utf-8")
+
+                data = data.rstrip()
+                if data == command:
+                    data = ""
+
+            except subprocess.CalledProcessError as e:
+                data = e.output       
+            data +="x"
+            out_list = data.split("\n");
+            output = ""
+            for s in out_list:
+                output+= s[:-1] + "\n"
+            print(output)
+            #output = output.rstrip()
+            try:
+                output = output.split("\n",1)[1];
+            except:
+                pass
+            output.replace("\n","\r")
+
+            if output != "":
+                output = "%c(@green)%" + output + "%c()"
+
+        else:
+            output = "%c(@orange)%Try `ls` to start with.%c()"
+        return HttpResponse(output)
+    return HttpResponse("Unauthorized.", status=403)
+
+
+
+
+def handle(request):
+    if request.method == 'POST':
+        data = request.POST.get("instance_name",None)
+        if data != None:
+            print(data)
+            #pulling image 
+            
+            cmd = "docker pull " + data
+            #cmd = "ls"
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            for line in process.stdout:
+                #print(line)
+                pass
+            process.wait()
+            print(process.returncode)
+
+            if process.returncode == 0: 
+                cmd = "docker run -id " + data
+                print(cmd)
+                process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+                process.wait()
+                instance_id = process.stdout
+
+                return HttpResponse(instance_id)
+            else:
+                return HttpResponse(-1)

@@ -1,0 +1,118 @@
+
+{% extends 'base.html' %}
+
+
+<style>
+.spana {
+  display: inline; /* the default for span */
+  width: 100px;
+  height: 100px;
+  padding: 100px;
+  border: 1px solid blue;  
+  color: white;
+  background-color: yellow; 
+}
+.myDiv {
+	width: 100%; height: 100%; padding-top: :100px;   height: 100px;
+padding: vertical horizontal;
+}
+
+
+.pagination a {
+  color: white;
+  float: middle;
+  padding: 8px 16px;
+  text-decoration: none;
+  width: 100px;
+  height: 100px;
+  padding-top: : 100px;
+
+  transition: background-color .3s;
+}
+
+/* Style the active/current link */
+.pagination a.active {
+  background-color: dodgerblue;
+  color: white;
+}
+
+/* Add a grey background color on mouse-over */
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+.iconDetails {
+ margin-left:2%;
+float:left; 
+height:40px;
+width:40px;	
+} 
+
+.container2 {
+	width:100%;
+	height:auto;
+	padding:1%;
+  border: 10px solid blue;  
+}
+
+h4 {
+    margin:0px;
+}
+</style>
+{% block content %}
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+Successfully tested ON alpine,nginx,ubuntu
+
+{% for item in summary %}
+
+	{% if item.certification_status != "certified" %}    
+	<div class=".myDiv">
+
+		<img src ="https://d1q6f0aelx0por.cloudfront.net/product-logos/library-{{item.name}}-logo.png?"  onerror="this.onerror=null; this.src='/static/img/docker_img.png'" alt="" width="80" height="80" style="float:left">
+				<p >{{ item.name }} </p>
+
+		<p>{{ item.short_description }}</p>
+
+
+	
+	  <a href="/shell/?{{item.name}}" style="float:right;"> launch {{item.name }}</a>
+
+
+	</div>
+
+
+	{% endif %}
+
+{% endfor %}
+
+
+
+
+ <div class="pagination">
+  <a href="#">&laquo;</a>
+  <a href="?page=1">1</a>
+  <a href="?page=2">2</a>
+  <a href="?page=3">3</a>
+  <a href="?page=4">4</a>
+  <a href="?page=5">5</a>
+  <a href="?page=6">6</a>
+  <a href="#">&raquo;</a>
+</div> 
+
+
+       
+{% endblock %}
+
+
+  
+
+
+
+    

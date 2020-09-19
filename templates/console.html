@@ -1,0 +1,63 @@
+<html>
+<head>
+    {{ process }}
+    <script src="/static/js/termlib.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .term {
+            font-family: courier, fixed, swiss, sans-serif;
+            font-size: 16px;
+            color: #D8D8D8;
+            background: none;
+        }
+
+        .termReverse {
+            color: #424242;
+            background: #33d011;
+        }
+
+        body {
+            background: #242424;
+        }
+    </style>
+</head>
+<body>
+<div class="termDiv" id="termDiv"></div>
+<form>{% csrf_token %}</form>
+</body>
+<script>
+    term = new Terminal(
+        {
+            type: "POST",
+            ps: '*->',
+            greeting: '%+rWith great power comes great responsibilty. %-r%n',
+
+            id: 1,
+            termDiv: 'termDiv',
+            crsrBlinkMode: true,
+            handler: function () {
+                this.newLine();
+                var line = this.lineBuffer;
+                var universe = this;
+                    $.ajax({
+                        url: 'post/',
+                        type: "POST",
+                        data: {
+                            csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                            command: line,
+                            instance_id: location.search.substring(4)
+                        },
+                        dataType: "json",
+                        complete: function (info) {
+                            
+                            universe.write(info.responseText);
+                            universe.prompt();
+                        }
+                    });
+                
+            }
+        }
+    );
+    term.open();
+</script>
+</html>
