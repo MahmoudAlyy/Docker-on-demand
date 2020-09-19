@@ -107,11 +107,11 @@ def console_post(request):
                 shell = subprocess.Popen(SHELL,preexec_fn=os.setsid,stdin=slave,stdout=slave,stderr=slave,universal_newlines=True)
 
                 os.write(master, b"docker attach " + instance_id.encode() + b" \n")
-                time.sleep(0.5)
+                time.sleep(0.3)
                 temp=os.read(master,2048)
 
                 os.write(master, command.encode() + b" \n")
-                time.sleep(0.5)
+                time.sleep(0.2)
                 result=os.read(master,2048)
                 data = result.decode()
 
