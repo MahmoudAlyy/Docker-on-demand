@@ -33,6 +33,8 @@ urlpatterns = [
     url(r'^browse/$', users_views.browse, name='browse'),
     url(r'^handle/$', users_views.handle, name='handle'),
     url(r'^console/$', users_views.console, name='console'),
+    url(r'^kill/$', users_views.kill, name='kill'),
+
     url(r'^console/post/$', users_views.console_post, name='console_post'),
 
 

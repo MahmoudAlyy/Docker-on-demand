@@ -6,6 +6,7 @@ import os
 import requests
 import subprocess
 from django.http import HttpResponse
+from .models import *
 
 ###################33
 from django.contrib import admin
@@ -26,7 +27,16 @@ import re
 
 #@login_required
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        username = request.user.username
+        u = User.objects.get(username=username)
+        user_machines = u.machine.all().values()
+        print(user_machines)
+        return render(request, 'home.html',{'machine':user_machines})
+
+    else:
+        return render(request, 'home.html')
+
 
 def shell(request):
     #get_value = request.GET.get('q',None)
@@ -90,6 +100,20 @@ def console(request):
     
     return render(request, 'console.html')
 
+
+@login_required
+def kill(request):
+    #instance_id = request.POST.get("instance_id")
+    instance_id = request.GET.get('id',None)
+    
+    cmd = "docker kill " + instance_id
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    process.wait()
+    Machines.objects.filter(instance_id=instance_id).delete()
+    
+    return render(request, 'kill.html')
+
+
 @login_required
 def console_post(request):  
 
@@ -150,7 +174,7 @@ def console_post(request):
 
 
 
-
+@login_required
 def handle(request):
     if request.method == 'POST':
         data = request.POST.get("instance_name",None)
@@ -158,7 +182,6 @@ def handle(request):
             #pulling image 
             
             cmd = "docker pull " + data
-            #cmd = "ls"
             process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
             for line in process.stdout:
                 #print(line)
@@ -170,8 +193,16 @@ def handle(request):
                 cmd = "docker run -id -t " + data
                 print(cmd)
                 process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-                process.wait()
-                instance_id = process.stdout
+                instance_id, err = process.communicate()
+                instance_id = instance_id.decode()[:-1]
+            
+                username = request.user.username
+                u = User.objects.get(username=username)
+                m = Machines(user=u,instance_id=instance_id,instance_name=data)
+                m.save()
+
+
+
 
                 return HttpResponse(instance_id)
             else:

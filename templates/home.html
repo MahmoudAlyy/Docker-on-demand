@@ -2,16 +2,60 @@
 
 {% block content %}
 
+<style>
+	#main {
+  width: 50%;
+}
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+.myDiv {
+	width: 100%; height: 100%; padding-top: :100px;   height: 100px;
+padding: vertical horizontal;
+  border: 1px dotted black;
+
+}
+
+</style>
+
+
+
+
         {% if user.is_authenticated %}
         
-        Hi {{ user }}
+        <h2>{{ user}}'s Containers</h2> 
+		<p> <br><br></p>
+
+        {% for item in machine %}
+
+        
+        <div class=".myDiv">
+
+		
+
+		<h4 style="float: left">{{ item.instance_name}}_{{item.id}} </h4>
+
+
+
+	
+	  
+	  <a href="/kill/?id={{item.instance_id}}" class="btn btn-lg btn-secondary" style="float:right; font-size: 15px;  margin-left: 30px"> KILL {{item.instance_name }}</a>
+	          &nbsp;
+	  <a href="/console/?id={{item.instance_id}}" class="btn btn-lg btn-secondary" style="float:right; font-size: 15px;"> Attach {{item.instance_name }}</a>
+
+		<p> <br><br></p>
+
+		</div>	
+
+
+        {% endfor %}
 
         {% else %}
 
         <h1 class="">Launch Your Docker Instance.</h1>
-        <p class="lead">
-        <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
-        </p>
+       	
 
         {% endif %}
     {% endblock %}
