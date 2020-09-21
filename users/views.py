@@ -61,15 +61,16 @@ def run_image(request):
 @login_required
 def browse(request):
     page_number = request.GET.get('page','1')
-
-    url = 'https://hub.docker.com/api/content/v1/products/search?page='+page_number+'&page_size=15&q=&type=image'
+    q = request.GET.get('q','')
+    url = 'https://hub.docker.com/api/content/v1/products/search?page='+page_number+'&page_size=15&q='+q+'&type=image'
+    
     headers = {'Search-Version': 'v3'}
 
     page = requests.get(url,headers=headers)
 
     summary = page.json()['summaries']
 
-    return render(request, 'browse.html', {'summary': summary})
+    return render(request, 'browse.html', {'summary': summary, 'page_number':page_number,'q':q})
 
 
 
