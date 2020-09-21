@@ -3,17 +3,22 @@ Dockerized Django V2 web application to launch docker instances and interact wit
 
 
 
-The user can browse available images scraped from docker hub
+The user can browse available images scraped from docker hub,
 
 ![Imgur](https://i.imgur.com/sZETM12.png)
 
 
 
-And launch one or more instances at the same time
+Launch one or more instances at the same time (Multiple users can launch an instance at the same time)
 
 (Ex: Launching Alpine & Python containers)
 
 ![Imgur](https://i.imgur.com/sYhiiIz.png)
+
+
+And view, attach or kill running containers
+
+![Imgur](https://i.imgur.com/bqsQ4r6.png)
 
 # Installation
 
