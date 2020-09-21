@@ -97,8 +97,16 @@ def signup(request):
 
 @login_required
 def console(request):
+    if request.user.is_authenticated:
+        username = request.user.username
+        instance_id = request.GET.get('id',None)
+        instance_name = Machines.objects.get(instance_id=instance_id)
+        #print(m)
+        #u = User.objects.get(username=username)
+        #user_machines = u.machine.all().values()
+        #print(user_machines)
     
-    return render(request, 'console.html')
+    return render(request, 'console.html',{'instance_name': instance_name})
 
 
 @login_required
@@ -122,6 +130,16 @@ def console_post(request):
         command = request.POST.get("command")
         instance_id = request.POST.get("instance_id")
 
+        if command == "exit":
+            return HttpResponse("exit")
+            #cmd = "docker kill " + instance_id
+            #process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            #process.wait()
+            #Machines.objects.filter(instance_id=instance_id).delete()
+            #response = redirect('/kill/')
+            #return response
+
+
 
         if command != None:
             try:
@@ -134,20 +152,22 @@ def console_post(request):
                 time.sleep(0.1)
                 temp=os.read(master,2048)
 
+               # os.write(master, b"/bin/sh \n")
+                #time.sleep(0.1)
+                #temp=os.read(master,2048)
+
                 os.write(master, command.encode() + b" \n")
                 time.sleep(0.4)
                 result=os.read(master,16384)
+                #result = result.replace("\r", "x") #TEST
+                print("RES S",result,"\nRES E")
                 data = result.decode()
-
-                data = data.rstrip()
-                if data == command:
-                    data = ""
-                output =data
-                print(output)
 
             except subprocess.CalledProcessError as e:
                 data = e.output       
             
+            data = data.split('\n',1)[1]
+
             data +="x"
             out_list = data.split("\n");
             output = ""
@@ -195,7 +215,7 @@ def handle(request):
             print(process.returncode)
 
             if process.returncode == 0: 
-                cmd = "docker run -i -d -t " + data
+                cmd = "docker run -i -d -t --entrypoint /bin/sh " + data
                 print(cmd)
                 process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 instance_id, err = process.communicate()

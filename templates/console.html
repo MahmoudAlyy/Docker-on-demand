@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{{instance_name}}
 <html>
 <head>
     {{ process }}
@@ -34,6 +34,8 @@
             type: "POST",
             ps: '',
             //greeting: '%+rWith great power comes great responsibilty. %-r%n',
+            //cols:110,
+            //rows:25,
 
             id: 1,
             termDiv: 'termDiv',
@@ -52,7 +54,14 @@
                         },
                         dataType: "json",
                         complete: function (info) {
-                            
+                            if (info.responseText =="exit"){
+                            var instance_id =  location.search.substring(4)
+
+                                window.location.replace("/kill/?id="+instance_id);
+
+                            }
+                            else{
+
                             universe.write(info.responseText);
 
                             universe.lock=true;
@@ -60,6 +69,7 @@
                             universe.lock=false;
                             universe.cursorOn();                            
                         }
+                    }
                     });
                 
             }

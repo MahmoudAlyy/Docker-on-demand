@@ -9,6 +9,6 @@ class Machines(models.Model):
 
 
 	def __str__(self):
-		return f"{self.instance_name}_{self.instance_id}"
+		return f"{self.instance_name}"
 
 
