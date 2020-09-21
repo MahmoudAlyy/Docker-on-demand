@@ -31,7 +31,7 @@ def home(request):
         username = request.user.username
         u = User.objects.get(username=username)
         user_machines = u.machine.all().values()
-        print(user_machines)
+        #print(user_machines)
         return render(request, 'home.html',{'machine':user_machines})
 
     else:
@@ -147,10 +147,10 @@ def console_post(request):
                 result = ""
                 master, slave = os.openpty()
                 SHELL = ["/bin/bash"]
-                shell = subprocess.Popen(SHELL,preexec_fn=os.setsid,stdin=slave,stdout=slave,stderr=slave,universal_newlines=True)
+                shell = subprocess.Popen(SHELL,preexec_fn=os.setsid,bufsize=5000,stdin=slave,stdout=slave,stderr=slave,universal_newlines=True)
 
                 os.write(master, b"docker attach  " + instance_id.encode() + b" \n")
-                time.sleep(0.1)
+                time.sleep(0.2)
                 temp=os.read(master,2048)
 
                # os.write(master, b"/bin/sh \n")
@@ -158,10 +158,11 @@ def console_post(request):
                 #temp=os.read(master,2048)
 
                 os.write(master, command.encode() + b" \n")
-                time.sleep(0.4)
-                result=os.read(master,16384)
+                time.sleep(0.6)
+                result=os.read(master,4200)
+
                 #result = result.replace("\r", "x") #TEST
-                print("RES S",result,"\nRES E")
+                print("ORG:\n",result,"\nORD END\n")
                 data = result.decode()
 
             except subprocess.CalledProcessError as e:
@@ -169,6 +170,14 @@ def console_post(request):
             
             data = data.split('\n',1)[1]
 
+            print("AFTER ONE SPLIE:\n",data.encode(),"\nSPLIT END\n")
+            print(data.split('\n',1)[0].encode())
+            if data.split('\n',1)[0] == command+" \r":
+                print(10*"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+                data = data.split('\n',1)[1]
+
+
+            """
             data +="x"
             out_list = data.split("\n");
             output = ""
@@ -180,7 +189,9 @@ def console_post(request):
                 pass
             output.replace("\r","")
             output = output.rstrip()
-            
+            """
+            output= data ###
+
             ###
             ansi_escape =re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
             output=ansi_escape.sub('', output)
@@ -189,6 +200,17 @@ def console_post(request):
             new_out=ansi_escape.sub('', output)
             output = new_out.replace("undefined", "")                 
             ####
+
+            #output = output.replace("\n","")
+            output = output.replace("\r","")
+            #output = output +"\n"
+
+            #print("start \n",output.encode(),"\n end\n")
+            #print("start \n",output,"\n end\n")
+
+            output = output.encode().decode()
+
+            
             if output != "":
                 output = "%c(@green)%" + output + "%c()"
                 pass
@@ -213,11 +235,11 @@ def handle(request):
                 #print(line)
                 pass
             process.wait()
-            print(process.returncode)
+            #print(process.returncode)
 
             if process.returncode == 0: 
                 cmd = "docker run -i -d -t --entrypoint /bin/sh " + data
-                print(cmd)
+                #print(cmd)
                 process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 instance_id, err = process.communicate()
                 instance_id = instance_id.decode()[:-1]
