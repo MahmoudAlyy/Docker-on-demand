@@ -130,22 +130,24 @@ def console_post(request):
                 SHELL = ["/bin/bash"]
                 shell = subprocess.Popen(SHELL,preexec_fn=os.setsid,stdin=slave,stdout=slave,stderr=slave,universal_newlines=True)
 
-                os.write(master, b"docker attach " + instance_id.encode() + b" \n")
-                time.sleep(0.3)
+                os.write(master, b"docker attach  " + instance_id.encode() + b" \n")
+                time.sleep(0.1)
                 temp=os.read(master,2048)
 
                 os.write(master, command.encode() + b" \n")
-                time.sleep(0.2)
-                result=os.read(master,2048)
+                time.sleep(0.4)
+                result=os.read(master,16384)
                 data = result.decode()
 
                 data = data.rstrip()
                 if data == command:
                     data = ""
                 output =data
+                print(output)
 
             except subprocess.CalledProcessError as e:
                 data = e.output       
+            
             data +="x"
             out_list = data.split("\n");
             output = ""
@@ -157,15 +159,18 @@ def console_post(request):
                 pass
             output.replace("\r","")
             output = output.rstrip()
-
+            
             ###
-            #ansi_escape =re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+            ansi_escape =re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
+            output=ansi_escape.sub('', output)
+
             ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
             new_out=ansi_escape.sub('', output)
             output = new_out.replace("undefined", "")                 
             ####
             if output != "":
                 output = "%c(@green)%" + output + "%c()"
+                pass
 
         else:
             output = "%c(@orange)%Try `ls` to start with.%c()"
@@ -190,7 +195,7 @@ def handle(request):
             print(process.returncode)
 
             if process.returncode == 0: 
-                cmd = "docker run -id -t " + data
+                cmd = "docker run -i -d -t " + data
                 print(cmd)
                 process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 instance_id, err = process.communicate()

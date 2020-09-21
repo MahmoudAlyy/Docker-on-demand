@@ -1,6 +1,7 @@
 
 {% extends 'base.html' %}
 
+{% block content %}
 
 <style>
 .spana {
@@ -16,50 +17,25 @@
 	width: 100%; height: 100%; padding-top: :100px;   height: 100px;
 padding: vertical horizontal;
   border: 1px dotted black;
+  background-color: red;
 
 }
 
 
 .pagination a {
-  color: white;
+  color: black;
   float: middle;
   padding: 8px 16px;
   text-decoration: none;
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 40px;
   padding-top: : 100px;
 
   transition: background-color .3s;
 }
 
-/* Style the active/current link */
-.pagination a.active {
-  background-color: dodgerblue;
-  color: white;
-}
 
-/* Add a grey background color on mouse-over */
-.pagination a:hover:not(.active) {background-color: #ddd;}
-
-.iconDetails {
- margin-left:2%;
-float:left; 
-height:40px;
-width:40px;	
-} 
-
-.container2 {
-	width:100%;
-	height:auto;
-	padding:1%;
-  border: 10px solid blue;  
-}
-
-h4 {
-    margin:0px;
-}
 </style>
-{% block content %}
 
 <p><br></p>
 
@@ -85,9 +61,10 @@ h4 {
 
 {% endfor %}
 
+<p><br></p>
 
 <nav aria-label="Page navigation example">
-  <ul class="pagination">
+  <ul class="pagination justify-content-center">
     <li class="page-item"><a class="page-link" href="?page=1" style="font-size: 12px;">1</a></li>
     <li class="page-item"><a class="page-link" href="?page=2" style="font-size: 12px;">2</a></li>
     <li class="page-item"><a class="page-link" href="?page=3" style="font-size: 12px;">3</a></li>
