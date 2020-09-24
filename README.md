@@ -1,11 +1,11 @@
 # Docker-on-demand
-Dockerized Django V2 web application to launch docker instances and interact with them using CLI.
+Dockerized Django V2 web application to launch docker instances and interact with them using Shell.
 
 
 
 The user can browse available images scraped from docker hub,
 
-![Imgur](https://i.imgur.com/sZETM12.png)
+![Imgur](https://i.imgur.com/NLtNDyG.png)
 
 
 
@@ -13,12 +13,12 @@ Launch one or more instances at the same time (Multiple users can launch an inst
 
 (Ex: Launching Alpine & Python containers)
 
-![Imgur](https://i.imgur.com/sYhiiIz.png)
+![Imgur](https://i.imgur.com/gCg0nwY.png)
 
 
 And view, attach or kill running containers
 
-![Imgur](https://i.imgur.com/bqsQ4r6.png)
+![Imgur](https://i.imgur.com/nVibthb.png)
 
 # Installation
 
