@@ -130,18 +130,9 @@ def console_post(request):
     if request.POST:
         command = request.POST.get("command")
         instance_id = request.POST.get("instance_id")
+        print("cmd:",command.encode())
 
-        if command == "exit":
-            return HttpResponse("exit")
-            #cmd = "docker kill " + instance_id
-            #process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            #process.wait()
-            #Machines.objects.filter(instance_id=instance_id).delete()
-            #response = redirect('/kill/')
-            #return response
-
-
-
+        
         if command != None:
             try:
                 result = ""
@@ -152,28 +143,39 @@ def console_post(request):
                 os.write(master, b"docker attach  " + instance_id.encode() + b" \n")
                 time.sleep(0.2)
                 temp=os.read(master,2048)
-
-               # os.write(master, b"/bin/sh \n")
-                #time.sleep(0.1)
-                #temp=os.read(master,2048)
-
+                  
+                # execute cmd given
                 os.write(master, command.encode() + b" \n")
                 time.sleep(0.6)
                 result=os.read(master,4200)
 
-                #result = result.replace("\r", "x") #TEST
+                # debugging
                 print("ORG:\n",result,"\nORD END\n")
                 data = result.decode()
+                
+                # if cmd was exit, try to attach again and see if it errors out
+                if "exit" in command:
+                    master2, slave2 = os.openpty()
+                    SHELL2 = ["/bin/bash"]
+                    shell2 = subprocess.Popen(SHELL2,stdin=slave2,stdout=slave2,stderr=slave2,universal_newlines=True)
+
+                    os.write(master2, b"docker attach  " + instance_id.encode() + b" \n")
+                    time.sleep(0.5)
+                    temp2=os.read(master2,2048)
+                    print("temp2:",temp2)
+                    if "Error: No such container: "+instance_id  in temp2.decode():
+                        return HttpResponse("exit")
+                
 
             except subprocess.CalledProcessError as e:
                 data = e.output       
             
             data = data.split('\n',1)[1]
 
-            print("AFTER ONE SPLIE:\n",data.encode(),"\nSPLIT END\n")
-            print(data.split('\n',1)[0].encode())
+            #print("AFTER ONE SPLIE:\n",data.encode(),"\nSPLIT END\n")
+            #print(data.split('\n',1)[0].encode())
             if data.split('\n',1)[0] == command+" \r":
-                print(10*"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+                #print(10*"SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
                 data = data.split('\n',1)[1]
 
 
@@ -238,7 +240,7 @@ def handle(request):
             #print(process.returncode)
 
             if process.returncode == 0: 
-                cmd = "docker run -i -d -t --entrypoint /bin/sh " + data
+                cmd = "docker run -i -d -t --rm --entrypoint /bin/sh " + data
                 #print(cmd)
                 process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 instance_id, err = process.communicate()
