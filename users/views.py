@@ -87,7 +87,13 @@ def console_post(request):
         command = request.POST.get("command")
         instance_id = request.POST.get("instance_id")
         print("cmd:",command.encode())
-        
+
+        #check if user owns the instance
+        check_id = Machines.objects.filter(instance_id=instance_id, user=request.user.id)
+        if not check_id:
+            return HttpResponse("Unauthorized.", status=403)
+
+       
         if command != None:
             try:
                 result = ""
@@ -135,12 +141,9 @@ def console_post(request):
 
             output= data 
 
+            # remove the ANSI escape sequences
             ansi_escape =re.compile(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]')
             output=ansi_escape.sub('', output)
-
-            ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-            new_out=ansi_escape.sub('', output)
-            output = new_out.replace("undefined", "")                 
 
             output = output.replace("\r","")
               
