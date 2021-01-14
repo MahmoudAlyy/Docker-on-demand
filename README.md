@@ -8,15 +8,14 @@ The user can browse available images scraped from docker hub,
 ![Imgur](https://i.imgur.com/NLtNDyG.png)
 
 
-
-Launch one or more instances at the same time (Multiple users can launch an instance at the same time)
+launch one or more instances
 
 (Ex: Launching Alpine & Python containers)
 
 ![Imgur](https://i.imgur.com/gCg0nwY.png)
 
 
-And view, attach or kill running containers
+and view, attach or kill running containers.
 
 ![Imgur](https://i.imgur.com/nVibthb.png)
 
@@ -31,3 +30,5 @@ docker build -t docker_on_demand Docker-on-demand/.
 ```
 docker run  -p 8000:8000 -it -v "/var/run/docker.sock:/var/run/docker.sock:rw" docker_on_demand
 ```
+## Note
+Long running tasks and interactive commands doesn't work.
